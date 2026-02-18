@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Preferences Study</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --border: #D8D2C8;
+    --text-primary: #1A1714;
+    --text-secondary: #5C5650;
+    --text-muted: #9A9490;
+    --accent: #2B4A8C;
+    --accent-light: #EAF0FF;
+    --accent-hover: #1E3570;
+    --danger: #8C2B2B;
+    --success: #2B6B3C;
+    --warn-bg: #FFF8E8;
+    --warn-border: #C8A94A;
+    --radius: 4px;
+    --radius-lg: 8px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    --shadow-focus: 0 0 0 3px rgba(43,74,140,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Header bar ── */
+  .study-bar {
+    background: var(--accent);
+    color: white;
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .study-bar .study-id { opacity: 0.7; }
+  .progress-wrap { display: flex; align-items: center; gap: 10px; }
+  .progress-track {
+    width: 140px; height: 4px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: white;
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-label { font-size: 11px; opacity: 0.85; }
+
+  /* ── Main layout ── */
+  .page-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Screen (section) ── */
+  .screen {
+    display: none;
+    animation: fadeUp 0.35s ease both;
+  }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Typography ── */
+  .section-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+  }
+  h2 {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    margin-top: 32px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  p { color: var(--text-secondary); margin-bottom: 14px; }
+  p strong { color: var(--text-primary); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── Notice boxes ── */
+  .notice {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-left: 4px solid var(--warn-border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #5A4200;
+  }
+  .notice.identifiable {
+    background: #FFF0F0;
+    border-color: #C84A4A;
+    border-left-color: #C84A4A;
+    color: #5A1A1A;
+  }
+  .notice.anonymous {
+    background: #F0F7FF;
+    border-color: #4A7EC8;
+    border-left-color: #4A7EC8;
+    color: #1A2F5A;
+  }
+  .notice .notice-title {
+    font-weight: 500;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Headline stimulus card ── */
+  .headline-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0;
+    margin-bottom: 28px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
+  }
+  .headline-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+  .headline-header {
+    background: #F0EDE8;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .headline-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .source-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    background: var(--border);
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .headline-text {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.45;
+    padding: 20px 24px 16px;
+    color: var(--text-primary);
+  }
+  .headline-body { padding: 0 24px 24px; }
+
+  /* ── Rating scales ── */
+  .rating-group { margin-bottom: 20px; }
+  .rating-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .rating-scale {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .rating-scale-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .scale-anchors {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 0 2px;
+  }
+  .rating-btn {
+    width: 42px; height: 42px;
+    border: 1.5px solid var(--border);
+    background: white;
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rating-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+  .rating-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    box-shadow: 0 2px 8px rgba(43,74,140,0.3);
+  }
+
+  /* ── Form elements ── */
+  .form-group { margin-bottom: 24px; }
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .form-label .required { color: var(--danger); margin-left: 3px; }
+  .form-sublabel {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  select, input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: white;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  select:focus, input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--shadow-focus);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C5650' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+  input[type="number"] { max-width: 120px; }
+
+  .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+  .radio-option, .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+    font-size: 14px;
+  }
+  .radio-option:hover, .checkbox-option:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .radio-option input, .checkbox-option input { cursor: pointer; accent-color: var(--accent); }
+  .radio-option.selected, .checkbox-option.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .likert-group { display: flex; flex-direction: column; gap: 20px; }
+  .likert-item {}
+  .likert-q {
+    font-size: 14px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .likert-scale {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .likert-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    border-right: 1px solid var(--border);
+    background: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    line-height: 1.2;
+  }
+  .likert-btn:last-child { border-right: none; }
+  .likert-btn .lbl { font-size: 9px; color: var(--text-muted); }
+  .likert-btn:hover { background: var(--accent-light); color: var(--accent); }
+  .likert-btn.selected { background: var(--accent); color: white; }
+  .likert-btn.selected .lbl { color: rgba(255,255,255,0.75); }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+    border: none;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 2px 8px rgba(43,74,140,0.25);
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 4px 14px rgba(43,74,140,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+  .btn-outline:hover { background: var(--accent-light); }
+  .btn-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
+    gap: 12px;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── Error / validation ── */
+  .err-msg {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .err-msg.visible { display: block; }
+  .field-error select, .field-error input { border-color: var(--danger); }
+
+  /* ── Complete screen ── */
+  .complete-icon {
+    width: 64px; height: 64px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(43,74,140,0.3);
+  }
+  .complete-icon svg { width: 32px; height: 32px; }
+
+  /* ── Consent list ── */
+  .consent-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+  .consent-list li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  .consent-list li:last-child { border-bottom: none; }
+  .consent-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+  }
+
+  /* ── Condition badge (debug — hidden in prod) ── */
+  .condition-badge {
+    display: none; /* set to inline-flex for debugging */
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--accent-light);
+    color: var(--accent);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .page-wrap { padding: 32px 16px 60px; }
+    .card { padding: 20px; }
+    .rating-btn { width: 36px; height: 36px; font-size: 12px; }
+    .headline-text { font-size: 16px; }
+    h1 { font-size: 22px; }
+    .likert-btn .lbl { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="study-bar">
+  <span class="study-id">STUDY: MEDIA-PREFERENCES-2025</span>
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">0 / 7</span>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 0 — Welcome / Consent
+       ══════════════════════════════════════════════ -->
+  <div class="screen active" id="screen-0">
+    <div class="section-eyebrow">University Research Study</div>
+    <h1>Media Preferences &amp; Online Content Study</h1>
+
+    <div class="card">
+
+      <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--border);">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); letter-spacing:0.06em; text-transform:uppercase;">Consent for Participation in a Research Study</div>
+        <div style="font-size:13px; color:var(--text-secondary);"><strong>Study Title:</strong> Decision Making Survey</div>
+        <div style="font-size:13px; color:var(--text-secondary);"><strong>Principal Investigator:</strong> Akshina Banerjee</div>
+        <div style="font-size:13px; color:var(--text-secondary);"><strong>IRB Study Number:</strong> HUM00248040</div>
+      </div>
+
+      <p><strong>DESCRIPTION:</strong> We are researchers at the University of Michigan doing a research study about how people make evaluations. In this project, we are interested in people's evaluation of various options. In this study, we will ask you a series of questions about choices.</p>
+      <p>All data collected in this study are for research purposes only. Participation should take about <strong>8–10 minutes</strong>.</p>
+
+      <p><strong>RISKS AND BENEFITS:</strong> The risks to your participation in this online study are those associated with basic computer tasks and usage. The only benefit to you is the learning experience from participating in a research study. The benefit to society is the contribution to scientific knowledge.</p>
+
+      <p><strong>COMPENSATION:</strong> You will be paid <strong>$1.50</strong> for participating.</p>
+
+      <p><strong>CONFIDENTIALITY:</strong> Your Prolific ID or Mechanical Turk Worker ID will be used to distribute payment to you and will be stored in a secure location, along with the research data we collect from you. Please be aware that your MTurk Worker ID can potentially be linked to information about you on your Amazon public profile page, depending on the settings you have for your Amazon profile. We will not be accessing any personally identifying information about you that you may have put on your Amazon public profile page.</p>
+      <p>All data will be kept in a locked room or in a password-protected computer that is kept secure. Data access will be limited to the Principal Investigators. Fully anonymized data may be published or posted online. All non-anonymized data will be destroyed responsibly after the retention period. Your privacy will be maintained in all published and written data resulting from this study. Your name or other identifying information will not be used in our reports or published papers.</p>
+
+      <p><strong>SUBJECT'S RIGHTS:</strong> Your participation is voluntary. You may stop participating at any time by closing the browser window or the program to withdraw from the study. If you have any questions or concerns about this study, you may contact Professor Akshina Banerjee at <a href="/cdn-cgi/l/email-protection#e0818b9388898e81a0958d898388ce858495" style="color:var(--accent);"><span class="__cf_email__" data-cfemail="f1909a8299989f90b1849c989299df949584">[email&#160;protected]</span></a>.</p>
+
+      <p>If you have any questions about your rights as a participant in this research, you may contact the following office at the University of Michigan:</p>
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; font-size:13px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        <strong>IRB Health Sciences and Behavioral Sciences</strong><br>
+        2800 Plymouth Road, Bldg. 520, Rm. 2144<br>
+        Ann Arbor, MI 48109-2800<br>
+        Phone: (734) 936-0933 &nbsp;·&nbsp; Fax: (734) 936-1852<br>
+        <a href="/cdn-cgi/l/email-protection#a9c0dbcbc1dacbdae9dcc4c0cac187cccddc" style="color:var(--accent);"><span class="__cf_email__" data-cfemail="ea83988882998899aa9f87838982c48f8e9f">[email&#160;protected]</span></a>
+      </div>
+
+      <p style="margin-top:16px; font-size:14px; color:var(--text-muted);">By clicking <strong>"I agree and continue"</strong> you confirm that you are 18 or older, have read and understood the above information, and consent to participate in this study.</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="nextScreen(1)">I agree and continue →</button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 1 — Condition Instructions
+       (content injected by JS based on condition)
+       ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-1">
+    <div class="section-eyebrow">Study Instructions</div>
+    <h1>Before You Begin</h1>
+    <div id="condition-instructions"></div>
+
+    <div class="card">
+      <p><strong>Your task:</strong> You will be shown a series of news headlines, one at a time. For each headline, we ask you to imagine you have just seen it while browsing your social media feed. You will then answer two short questions about each headline.</p>
+      <p>Please respond based on your <em>genuine, immediate reaction</em> to each headline. There are no right or wrong answers.</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="nextScreen(2)">Continue to headlines →</button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 2–13 — Headlines (generated by JS)
+       ══════════════════════════════════════════════ -->
+  <!-- Headlines injected dynamically into screen-headlines -->
+  <div class="screen" id="screen-headlines">
+    <div class="section-eyebrow">Headline Ratings</div>
+    <div id="headline-counter" class="section-eyebrow" style="float:right; color: var(--text-muted);"></div>
+    <h1 id="headline-screen-title">Please rate the following headline</h1>
+    <p style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">Imagine you encounter this headline while scrolling through your social media feed.</p>
+
+    <div id="headline-display"></div>
+
+    <div id="headline-error" class="err-msg" style="margin-bottom:12px; font-size:13px;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="headline-next-btn" onclick="nextHeadline()">Next →</button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 3 — Manipulation Check
+       ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-mancheck">
+    <div class="section-eyebrow">About This Survey</div>
+    <h1>A Few Questions About Your Experience</h1>
+    <p>We'd like to ask a few questions about how you experienced this survey.</p>
+
+    <div class="card">
+      <div class="likert-group">
+
+        <div class="likert-item">
+          <div class="likert-q"><strong>MC1.</strong> To what extent did you feel that your responses in this survey said something meaningful about who you are as a person?</div>
+          <div class="likert-scale" id="mc1">
+            <button class="likert-btn" data-val="1" onclick="selectLikert('mc1',1)">1<span class="lbl">Not at all</span></button>
+            <button class="likert-btn" data-val="2" onclick="selectLikert('mc1',2)">2<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="3" onclick="selectLikert('mc1',3)">3<span class="lbl">Somewhat</span></button>
+            <button class="likert-btn" data-val="4" onclick="selectLikert('mc1',4)">4<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="5" onclick="selectLikert('mc1',5)">5<span class="lbl">Very much</span></button>
+          </div>
+        </div>
+
+        <div class="likert-item">
+          <div class="likert-q"><strong>MC2.</strong> How much did you feel your responses reflected your personal values and character?</div>
+          <div class="likert-scale" id="mc2">
+            <button class="likert-btn" data-val="1" onclick="selectLikert('mc2',1)">1<span class="lbl">Not at all</span></button>
+            <button class="likert-btn" data-val="2" onclick="selectLikert('mc2',2)">2<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="3" onclick="selectLikert('mc2',3)">3<span class="lbl">Somewhat</span></button>
+            <button class="likert-btn" data-val="4" onclick="selectLikert('mc2',4)">4<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="5" onclick="selectLikert('mc2',5)">5<span class="lbl">Very much</span></button>
+          </div>
+        </div>
+
+        <div class="likert-item">
+          <div class="likert-q"><strong>MC3.</strong> While answering, how much did you feel that your choices were a random, in-the-moment reaction rather than a reflection of who you are?</div>
+          <div class="likert-scale" id="mc3">
+            <button class="likert-btn" data-val="1" onclick="selectLikert('mc3',1)">1<span class="lbl">Not at all</span></button>
+            <button class="likert-btn" data-val="2" onclick="selectLikert('mc3',2)">2<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="3" onclick="selectLikert('mc3',3)">3<span class="lbl">Somewhat</span></button>
+            <button class="likert-btn" data-val="4" onclick="selectLikert('mc3',4)">4<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="5" onclick="selectLikert('mc3',5)">5<span class="lbl">Very much</span></button>
+          </div>
+        </div>
+
+        <div class="likert-item">
+          <div class="likert-q"><strong>MC4.</strong> How much did you feel pressure to respond in a way that was consistent with how you see yourself as a person?</div>
+          <div class="likert-scale" id="mc4">
+            <button class="likert-btn" data-val="1" onclick="selectLikert('mc4',1)">1<span class="lbl">Not at all</span></button>
+            <button class="likert-btn" data-val="2" onclick="selectLikert('mc4',2)">2<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="3" onclick="selectLikert('mc4',3)">3<span class="lbl">Somewhat</span></button>
+            <button class="likert-btn" data-val="4" onclick="selectLikert('mc4',4)">4<span class="lbl"></span></button>
+            <button class="likert-btn" data-val="5" onclick="selectLikert('mc4',5)">5<span class="lbl">Very much</span></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="mancheck-error" class="err-msg"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitManCheck()">Continue →</button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 4 — Attention Check
+       ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-attention">
+    <div class="section-eyebrow">Quick Check</div>
+    <h1>Reading Comprehension Check</h1>
+
+    <div class="card">
+      <p>To ensure data quality, we occasionally include a simple comprehension question. Please read the following instruction carefully and follow it exactly.</p>
+
+      <div style="background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin: 20px 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; color: var(--text-primary);">
+        This question is a reading check. Although the question below asks which platform you use most, please select <strong>"Twitter / X"</strong> regardless of your actual answer. This confirms you are reading the instructions carefully.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Which social media platform do you use most often?</label>
+        <div class="radio-group" id="attn-group">
+          <label class="radio-option" onclick="selectRadio('attn-group',this)">
+            <input type="radio" name="attn" value="instagram"> Instagram
+          </label>
+          <label class="radio-option" onclick="selectRadio('attn-group',this)">
+            <input type="radio" name="attn" value="twitter"> Twitter / X
+          </label>
+          <label class="radio-option" onclick="selectRadio('attn-group',this)">
+            <input type="radio" name="attn" value="facebook"> Facebook
+          </label>
+          <label class="radio-option" onclick="selectRadio('attn-group',this)">
+            <input type="radio" name="attn" value="tiktok"> TikTok
+          </label>
+          <label class="radio-option" onclick="selectRadio('attn-group',this)">
+            <input type="radio" name="attn" value="other"> Other
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="attn-error" class="err-msg"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitAttention()">Continue →</button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 5 — Demographics
+       ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-demo">
+    <div class="section-eyebrow">Background Information</div>
+    <h1>About You</h1>
+    <p>Finally, we'd like to ask a few background questions. All responses are confidential and used only for descriptive statistics.</p>
+
+    <div class="card">
+
+      <h3>Basic Information</h3>
+
+      <div class="form-group" id="fg-age">
+        <label class="form-label">Age <span class="required">*</span></label>
+        <input type="number" id="demo-age" min="18" max="99" placeholder="e.g. 34">
+        <div class="err-msg" id="err-age">Please enter your age (18–99).</div>
+      </div>
+
+      <div class="form-group" id="fg-gender">
+        <label class="form-label">Gender <span class="required">*</span></label>
+        <div class="radio-group" id="gender-group">
+          <label class="radio-option" onclick="selectRadio('gender-group',this)">
+            <input type="radio" name="gender" value="man"> Man
+          </label>
+          <label class="radio-option" onclick="selectRadio('gender-group',this)">
+            <input type="radio" name="gender" value="woman"> Woman
+          </label>
+          <label class="radio-option" onclick="selectRadio('gender-group',this)">
+            <input type="radio" name="gender" value="nonbinary"> Non-binary / third gender
+          </label>
+          <label class="radio-option" onclick="selectRadio('gender-group',this)">
+            <input type="radio" name="gender" value="self-describe"> Prefer to self-describe
+          </label>
+          <label class="radio-option" onclick="selectRadio('gender-group',this)">
+            <input type="radio" name="gender" value="prefer-not"> Prefer not to say
+          </label>
+        </div>
+        <div class="err-msg" id="err-gender">Please select an option.</div>
+      </div>
+
+      <div class="form-group" id="fg-edu">
+        <label class="form-label">Highest level of education completed <span class="required">*</span></label>
+        <select id="demo-edu">
+          <option value="">— Select —</option>
+          <option value="less-hs">Less than high school</option>
+          <option value="hs">High school diploma / GED</option>
+          <option value="some-college">Some college, no degree</option>
+          <option value="assoc">Associate's degree</option>
+          <option value="bachelors">Bachelor's degree</option>
+          <option value="masters">Master's degree</option>
+          <option value="doctoral">Doctoral or professional degree (PhD, JD, MD, etc.)</option>
+          <option value="prefer-not">Prefer not to say</option>
+        </select>
+        <div class="err-msg" id="err-edu">Please select your education level.</div>
+      </div>
+
+      <h3>Social Media Use</h3>
+
+      <div class="form-group" id="fg-sm-freq">
+        <label class="form-label">On a typical day, how much time do you spend on social media? <span class="required">*</span></label>
+        <select id="demo-sm-freq">
+          <option value="">— Select —</option>
+          <option value="none">I don't use social media</option>
+          <option value="lt30">Less than 30 minutes</option>
+          <option value="30-60">30 minutes to 1 hour</option>
+          <option value="1-2h">1–2 hours</option>
+          <option value="2-4h">2–4 hours</option>
+          <option value="4h+">More than 4 hours</option>
+        </select>
+        <div class="err-msg" id="err-sm-freq">Please select an option.</div>
+      </div>
+
+      <div class="form-group" id="fg-sm-platform">
+        <label class="form-label">Which social media platform do you use most? <span class="required">*</span></label>
+        <select id="demo-sm-platform">
+          <option value="">— Select —</option>
+          <option value="instagram">Instagram</option>
+          <option value="twitter">Twitter / X</option>
+          <option value="facebook">Facebook</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube</option>
+          <option value="reddit">Reddit</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="other">Other</option>
+          <option value="none">I don't use social media</option>
+        </select>
+        <div class="err-msg" id="err-sm-platform">Please select an option.</div>
+      </div>
+
+      <h3>Political Orientation</h3>
+
+      <div class="form-group" id="fg-polid">
+        <label class="form-label">How would you describe your political views? <span class="required">*</span></label>
+        <div class="likert-scale" id="pol-scale" style="margin-top:4px;">
+          <button class="likert-btn" data-val="1" onclick="selectLikert('pol-scale',1)">1<span class="lbl">Very liberal</span></button>
+          <button class="likert-btn" data-val="2" onclick="selectLikert('pol-scale',2)">2<span class="lbl">Liberal</span></button>
+          <button class="likert-btn" data-val="3" onclick="selectLikert('pol-scale',3)">3<span class="lbl">Moderate</span></button>
+          <button class="likert-btn" data-val="4" onclick="selectLikert('pol-scale',4)">4<span class="lbl">Conservative</span></button>
+          <button class="likert-btn" data-val="5" onclick="selectLikert('pol-scale',5)">5<span class="lbl">Very conservative</span></button>
+          <button class="likert-btn" data-val="6" onclick="selectLikert('pol-scale',6)">—<span class="lbl">No opinion</span></button>
+        </div>
+        <div class="err-msg" id="err-polid">Please select an option.</div>
+      </div>
+
+      <div class="form-group" id="fg-ethnicity">
+        <label class="form-label">Which of the following best describes your racial or ethnic background? <span class="required">*</span></label>
+        <select id="demo-ethnicity">
+          <option value="">— Select —</option>
+          <option value="asian">Asian or Asian American</option>
+          <option value="black">Black or African American</option>
+          <option value="hispanic">Hispanic or Latino/a/x</option>
+          <option value="white">White or Caucasian</option>
+          <option value="native">American Indian or Alaska Native</option>
+          <option value="pacific">Native Hawaiian or Pacific Islander</option>
+          <option value="multiracial">Multiracial or mixed</option>
+          <option value="other">Other</option>
+          <option value="prefer-not">Prefer not to say</option>
+        </select>
+        <div class="err-msg" id="err-ethnicity">Please select an option.</div>
+      </div>
+
+    </div>
+
+      <h3>Final Comments</h3>
+
+      <div class="form-group">
+        <label class="form-label">Did you experience any issues with the survey, or do you have any comments you'd like to leave? <span style="color:var(--text-muted); font-weight:400;">(Optional)</span></label>
+        <textarea id="demo-comments" rows="4" placeholder="Leave any comments here..." style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:var(--radius); font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--text-primary); background:white; resize:vertical; transition:border-color 0.15s, box-shadow 0.15s; line-height:1.6;" onfocus="this.style.borderColor='var(--accent)'; this.style.boxShadow='var(--shadow-focus)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'"></textarea>
+      </div>
+
+    </div>
+
+    <div id="demo-error" class="err-msg" style="margin-bottom:12px;"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitDemo()">Complete study →</button>
+    </div>
+  </div>
+
+
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 5b — Debrief
+       ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-debrief">
+    <div class="section-eyebrow">Study Debrief</div>
+    <h1>Important Information About This Study</h1>
+
+    <div class="card">
+      <p>Now that you have completed the survey, we want to be transparent about the nature of the headlines you saw.</p>
+
+      <p><strong>All of the headlines in this study were hypothetical and entirely fabricated.</strong> They were not real news stories and did not appear in any news publication. They were created specifically for this research in order to systematically vary the type of language used, and any resemblance to actual news events or real reporting is coincidental.</p>
+
+      <p>We did not disclose this beforehand because knowing the headlines were constructed could have changed how you responded, which would have affected the validity of the study. We apologize for any inconvenience this may cause and appreciate your understanding.</p>
+
+      <p>If you have any questions about the study or its findings, please contact Professor Akshina Banerjee at <a href="/cdn-cgi/l/email-protection#e1808a9289888f80a1948c888289cf848594" style="color:var(--accent);"><span class="__cf_email__" data-cfemail="2948425a41404748695c44404a41074c4d5c">[email&#160;protected]</span></a>.</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitDebrief()">I understand — submit my responses →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 6 — Completion
+       ══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-complete">
+    <div class="complete-icon">
+      <svg viewBox="0 0 32 32" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6,16 13,23 26,9"/>
+      </svg>
+    </div>
+    <div class="section-eyebrow">Study Complete</div>
+    <h1>Thank you for your participation!</h1>
+
+    <div class="card">
+      <p>Your responses have been recorded. <strong>You will now be automatically redirected to Prolific to receive your payment.</strong></p>
+      <p style="font-size:13px; color: var(--text-muted);">If you are not redirected within 5 seconds, <a href="https://app.prolific.com/submissions/complete?cc=CH22F7A7" id="prolific-redirect-link" style="color:var(--accent);">click here</a>.</p>
+      <p style="font-size:13px; color: var(--text-muted); margin-top:12px;">If you have questions about this study, contact Professor Akshina Banerjee at <a href="/cdn-cgi/l/email-protection#c2a3a9b1aaabaca382b7afaba1aaeca7a6b7" style="color:var(--accent);"><span class="__cf_email__" data-cfemail="dabbb1a9b2b3b4bb9aafb7b3b9b2f4bfbeaf">[email&#160;protected]</span></a>.</p>
+    </div>
+
+    <div class="card" style="background: var(--bg);">
+      <div class="section-eyebrow">Debrief</div>
+      <p style="font-size:14px;">This study examined how people respond to online news headlines containing different types of language — including neutral and more provocative language — and whether framing responses as self-reflective affects how people report their reactions.</p>
+      <p style="font-size:14px;">Your honest responses were valuable regardless of what you reported. All data will be used only in aggregated form. Thank you for contributing to research on social media and online communication.</p>
+    </div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ════════════════════════════════════════════════════════
+   STATE & CONDITION ASSIGNMENT
+   ════════════════════════════════════════════════════════ */
+// ── Capture Prolific URL parameters ──
+const urlParams    = new URLSearchParams(window.location.search);
+const PROLIFIC_PID = urlParams.get('PROLIFIC_PID') || urlParams.get('prolific_pid') || null;
+const STUDY_ID     = urlParams.get('STUDY_ID')     || urlParams.get('study_id')     || null;
+const SESSION_ID   = urlParams.get('SESSION_ID')   || urlParams.get('session_id')   || null;
+
+const state = {
+  condition: null,         // 'toxic-high' | 'toxic-low' | 'profanity-high' | 'profanity-low'
+  languageType: null,      // 'toxic' | 'profanity'
+  identifiability: null,   // 'high' | 'low'
+  headlines: [],           // shuffled headline array for this participant
+  currentHeadlineIdx: 0,
+  responses: {},           // { h0: {read:N, share:N}, h1: {read:N, share:N}, ... }
+  mancheck: {},
+  attention: null,
+  attentionPassed: null,
+  demo: {},
+  screenHistory: [],
+  prolific: {
+    PROLIFIC_PID,
+    STUDY_ID,
+    SESSION_ID
+  }
+};
+
+// ── Randomly assign 2×2 condition ──
+(function assignCondition() {
+  const lang  = Math.random() < 0.5 ? 'toxic' : 'profanity';
+  const ident = Math.random() < 0.5 ? 'high' : 'low';
+  state.languageType    = lang;
+  state.identifiability = ident;
+  state.condition       = `${lang}-${ident}`;
+})();
+
+/* ════════════════════════════════════════════════════════
+   HEADLINE STIMULUS SETS
+   ════════════════════════════════════════════════════════ */
+
+// Each pair: neutral vs. manipulated, same topic.
+// Format: { topic, source, neutral, manipulated }
+
+const toxicPairs = [
+  {
+    topic: "climate",
+    source: "Climate Report",
+    neutral:    "Scientists warn that failure to act on climate change will have serious consequences for future generations",
+    manipulated:"Scientists rage: spineless politicians are destroying the planet and condemning future generations to hell"
+  },
+  {
+    topic: "immigration",
+    source: "National Tribune",
+    neutral:    "Debate intensifies over proposed changes to immigration policy as communities weigh economic and social impacts",
+    manipulated:"Immigration chaos explodes as corrupt politicians betray communities and tear families apart for political gain"
+  },
+  {
+    topic: "healthcare",
+    source: "Health Today",
+    neutral:    "Healthcare costs continue to rise as millions of Americans struggle to afford basic medical treatment",
+    manipulated:"Healthcare system is a disgrace: greedy corporations are robbing sick Americans while politicians do nothing"
+  },
+  {
+    topic: "tech",
+    source: "Tech Watch",
+    neutral:    "Social media companies face growing criticism over their handling of user data and privacy practices",
+    manipulated:"Social media giants exposed as predatory data thieves who exploit and manipulate billions of unsuspecting users"
+  },
+  {
+    topic: "economy",
+    source: "Market Daily",
+    neutral:    "Economic inequality grows as wages stagnate for lower-income workers while executive pay reaches record levels",
+    manipulated:"Economy is rigged: elites are robbing workers blind while politicians keep their mouths shut and take the cash"
+  },
+  {
+    topic: "police",
+    source: "City News",
+    neutral:    "Community leaders and police officials hold talks to address tensions following a series of controversial incidents",
+    manipulated:"Community erupts in fury over police brutality cover-up as corrupt officials protect violent officers from justice"
+  }
+];
+
+const profanityPairs = [
+  {
+    topic: "climate",
+    source: "Climate Report",
+    neutral:    "Scientists warn that failure to act on climate change will have serious consequences for future generations",
+    manipulated:"Scientists are done being polite: 'This climate bullsh*t is killing the planet and we're all f*cked if nothing changes'"
+  },
+  {
+    topic: "immigration",
+    source: "National Tribune",
+    neutral:    "Debate intensifies over proposed changes to immigration policy as communities weigh economic and social impacts",
+    manipulated:"'The whole damn system is broken': immigrants and advocates say they're fed up with government's crap on policy"
+  },
+  {
+    topic: "healthcare",
+    source: "Health Today",
+    neutral:    "Healthcare costs continue to rise as millions of Americans struggle to afford basic medical treatment",
+    manipulated:"'I can't afford to be sick — this sh*t is insane': Americans describe the nightmare of paying for healthcare"
+  },
+  {
+    topic: "tech",
+    source: "Tech Watch",
+    neutral:    "Social media companies face growing criticism over their handling of user data and privacy practices",
+    manipulated:"Tech workers blow the whistle: 'We knew this crap was wrong — the whole data game is one big mind-f*ck'"
+  },
+  {
+    topic: "economy",
+    source: "Market Daily",
+    neutral:    "Economic inequality grows as wages stagnate for lower-income workers while executive pay reaches record levels",
+    manipulated:"'I work my ass off and still can't pay rent — the whole economy is one giant scam rigged against regular people'"
+  },
+  {
+    topic: "police",
+    source: "City News",
+    neutral:    "Community leaders and police officials hold talks to address tensions following a series of controversial incidents",
+    manipulated:"'The whole damn thing is rotten': residents say they're sick and tired of police misconduct and being told to shut up"
+  }
+];
+
+/* ════════════════════════════════════════════════════════
+   BUILD HEADLINE LIST FOR THIS PARTICIPANT
+   ════════════════════════════════════════════════════════ */
+function buildHeadlines() {
+  const pairs = state.languageType === 'toxic' ? toxicPairs : profanityPairs;
+  const list = [];
+
+  pairs.forEach((pair, idx) => {
+    // Neutral version
+    list.push({
+      id: `n${idx}`,
+      type: 'neutral',
+      topic: pair.topic,
+      source: pair.source,
+      text: pair.neutral
+    });
+    // Manipulated version
+    list.push({
+      id: `m${idx}`,
+      type: state.languageType,
+      topic: pair.topic,
+      source: pair.source,
+      text: pair.manipulated
+    });
+  });
+
+  // Fisher-Yates shuffle
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+
+  state.headlines = list;
+}
+
+buildHeadlines();
+
+/* ════════════════════════════════════════════════════════
+   CONDITION INSTRUCTIONS (adapted from Bischof et al., 2024)
+   ════════════════════════════════════════════════════════ */
+function renderConditionInstructions() {
+  const container = document.getElementById('condition-instructions');
+
+  if (state.identifiability === 'high') {
+    // HIGH SELF-REFLECTION — responses are self-diagnostic and identity-revealing
+    container.innerHTML = `
+      <div class="notice identifiable">
+        <div class="notice-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3a1 1 0 110 2 1 1 0 010-2zm1 8H7v-5h2v5z"/>
+          </svg>
+          About Your Responses
+        </div>
+        <p style="margin:0; font-size:14px; line-height:1.6;">
+          <strong>Please read this carefully.</strong> Research has consistently shown that the media content people choose to engage with is <strong>a meaningful and accurate reflection of who they are</strong> — their values, their character, and their personal identity. The choices you make in this study are therefore <strong>genuinely revealing of your personality and the kind of person you are</strong>. We encourage you to take this into account as you respond.
+        </p>
+      </div>`;
+  } else {
+    // LOW SELF-REFLECTION — responses are incidental and non-diagnostic
+    container.innerHTML = `
+      <div class="notice anonymous">
+        <div class="notice-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 2a1 1 0 110 2 1 1 0 010-2zm1 8H7V8h2v4z"/>
+          </svg>
+          About Your Responses
+        </div>
+        <p style="margin:0; font-size:14px; line-height:1.6;">
+          <strong>Please read this carefully.</strong> Research has consistently shown that reactions to media content are <strong>largely random and situational</strong> — they are casual, in-the-moment responses that <strong>do not reflect your values, your character, or anything meaningful about who you are as a person</strong>. The choices you make in this study are therefore <strong>not diagnostic of your personality in any way</strong>. Please respond freely and naturally without concern.
+        </p>
+      </div>`;
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   HEADLINE RENDERING
+   ════════════════════════════════════════════════════════ */
+function renderCurrentHeadline() {
+  const idx = state.currentHeadlineIdx;
+  const h   = state.headlines[idx];
+  const n   = state.headlines.length;
+  const resp = state.responses[h.id] || { read: null, share: null };
+
+  document.getElementById('headline-counter').textContent = `Headline ${idx + 1} of ${n}`;
+  document.getElementById('headline-error').textContent = '';
+  document.getElementById('headline-error').classList.remove('visible');
+
+  const html = `
+    <div class="headline-card">
+      <div class="headline-header">
+        <span class="headline-number">Headline ${idx + 1} / ${n}</span>
+        <span class="source-chip">${h.source}</span>
+      </div>
+      <div class="headline-text">${h.text}</div>
+      <div class="headline-body">
+
+        <div class="rating-group">
+          <span class="rating-label">How likely are you to click to <strong>read more</strong> about this story?</span>
+          <div class="rating-scale-wrap">
+            <div class="rating-scale" id="read-scale">
+              ${[1,2,3,4,5,6,7].map(v => `
+                <button class="rating-btn ${resp.read === v ? 'selected' : ''}"
+                  data-val="${v}"
+                  onclick="selectRating('read-scale', ${v}, '${h.id}', 'read')">
+                  ${v}
+                </button>`).join('')}
+            </div>
+            <div class="scale-anchors">
+              <span>Not at all likely</span>
+              <span>Extremely likely</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rating-group" style="margin-top:20px;">
+          <span class="rating-label">How likely are you to <strong>share</strong> this headline with others?</span>
+          <div class="rating-scale-wrap">
+            <div class="rating-scale" id="share-scale">
+              ${[1,2,3,4,5,6,7].map(v => `
+                <button class="rating-btn ${resp.share === v ? 'selected' : ''}"
+                  data-val="${v}"
+                  onclick="selectRating('share-scale', ${v}, '${h.id}', 'share')">
+                  ${v}
+                </button>`).join('')}
+            </div>
+            <div class="scale-anchors">
+              <span>Not at all likely</span>
+              <span>Extremely likely</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+
+  document.getElementById('headline-display').innerHTML = html;
+  updateNextButtonLabel();
+}
+
+function selectRating(scaleId, val, headlineId, dim) {
+  // Update visual
+  document.querySelectorAll(`#${scaleId} .rating-btn`).forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.val) === val);
+  });
+  // Store
+  if (!state.responses[headlineId]) state.responses[headlineId] = { read: null, share: null };
+  state.responses[headlineId][dim] = val;
+  document.getElementById('headline-error').classList.remove('visible');
+}
+
+function updateNextButtonLabel() {
+  const idx = state.currentHeadlineIdx;
+  const n   = state.headlines.length;
+  const btn = document.getElementById('headline-next-btn');
+  if (idx === n - 1) {
+    btn.textContent = 'Finish headlines →';
+  } else {
+    btn.textContent = 'Next →';
+  }
+}
+
+function nextHeadline() {
+  const h = state.headlines[state.currentHeadlineIdx];
+  const r = state.responses[h.id] || {};
+
+  if (!r.read || !r.share) {
+    const err = document.getElementById('headline-error');
+    err.textContent = '← Please rate both dimensions before continuing.';
+    err.classList.add('visible');
+    return;
+  }
+
+  state.currentHeadlineIdx++;
+
+  if (state.currentHeadlineIdx < state.headlines.length) {
+    renderCurrentHeadline();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // All headlines done → go to manipulation check
+    goTo('screen-mancheck');
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   NAVIGATION
+   ════════════════════════════════════════════════════════ */
+const SCREENS = [
+  'screen-0',
+  'screen-1',
+  'screen-headlines',
+  'screen-mancheck',
+  'screen-attention',
+  'screen-demo',
+  'screen-debrief',
+  'screen-complete'
+];
+
+let currentScreen = 'screen-0';
+
+function goTo(screenId) {
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(screenId).classList.add('active');
+  currentScreen = screenId;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextScreen(n) {
+  const screenId = SCREENS[n];
+  if (!screenId) return;
+
+  // Special setup before showing screen
+  if (screenId === 'screen-1') {
+    renderConditionInstructions();
+  }
+  if (screenId === 'screen-headlines') {
+    renderCurrentHeadline();
+  }
+
+  goTo(screenId);
+}
+
+function updateProgress() {
+  const idx   = SCREENS.indexOf(currentScreen);
+  const total = SCREENS.length - 1; // exclude complete
+  const pct   = Math.round((idx / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${idx} / ${total}`;
+}
+
+/* ════════════════════════════════════════════════════════
+   FORM HELPERS
+   ════════════════════════════════════════════════════════ */
+function selectRadio(groupId, el) {
+  document.querySelectorAll(`#${groupId} .radio-option`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectLikert(scaleId, val) {
+  document.querySelectorAll(`#${scaleId} .likert-btn`).forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.val) === val);
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   MANIPULATION CHECK SUBMIT
+   ════════════════════════════════════════════════════════ */
+function submitManCheck() {
+  const items = ['mc1','mc2','mc3','mc4'];
+  const vals  = {};
+  let allDone = true;
+
+  items.forEach(id => {
+    const sel = document.querySelector(`#${id} .likert-btn.selected`);
+    if (!sel) { allDone = false; }
+    else { vals[id] = parseInt(sel.dataset.val); }
+  });
+
+  if (!allDone) {
+    const err = document.getElementById('mancheck-error');
+    err.textContent = 'Please answer all questions before continuing.';
+    err.classList.add('visible');
+    return;
+  }
+
+  state.mancheck = vals;
+  document.getElementById('mancheck-error').classList.remove('visible');
+  goTo('screen-attention');
+}
+
+/* ════════════════════════════════════════════════════════
+   ATTENTION CHECK SUBMIT
+   ════════════════════════════════════════════════════════ */
+function submitAttention() {
+  const sel = document.querySelector('input[name="attn"]:checked');
+  if (!sel) {
+    const err = document.getElementById('attn-error');
+    err.textContent = 'Please select an option.';
+    err.classList.add('visible');
+    return;
+  }
+  state.attention = sel.value;
+  state.attentionPassed = (sel.value === 'twitter');
+  document.getElementById('attn-error').classList.remove('visible');
+  goTo('screen-demo');
+}
+
+/* ════════════════════════════════════════════════════════
+   DEMOGRAPHICS SUBMIT
+   ════════════════════════════════════════════════════════ */
+function submitDemo() {
+  let valid = true;
+
+  // Age
+  const age = parseInt(document.getElementById('demo-age').value);
+  if (!age || age < 18 || age > 99) {
+    document.getElementById('err-age').classList.add('visible');
+    document.getElementById('fg-age').classList.add('field-error');
+    valid = false;
+  } else {
+    document.getElementById('err-age').classList.remove('visible');
+    document.getElementById('fg-age').classList.remove('field-error');
+  }
+
+  // Gender
+  const gender = document.querySelector('input[name="gender"]:checked');
+  if (!gender) {
+    document.getElementById('err-gender').classList.add('visible');
+    valid = false;
+  } else {
+    document.getElementById('err-gender').classList.remove('visible');
+  }
+
+  // Education
+  const edu = document.getElementById('demo-edu').value;
+  if (!edu) {
+    document.getElementById('err-edu').classList.add('visible');
+    document.getElementById('fg-edu').classList.add('field-error');
+    valid = false;
+  } else {
+    document.getElementById('err-edu').classList.remove('visible');
+    document.getElementById('fg-edu').classList.remove('field-error');
+  }
+
+  // SM frequency
+  const smFreq = document.getElementById('demo-sm-freq').value;
+  if (!smFreq) {
+    document.getElementById('err-sm-freq').classList.add('visible');
+    valid = false;
+  } else {
+    document.getElementById('err-sm-freq').classList.remove('visible');
+  }
+
+  // SM platform
+  const smPlatform = document.getElementById('demo-sm-platform').value;
+  if (!smPlatform) {
+    document.getElementById('err-sm-platform').classList.add('visible');
+    valid = false;
+  } else {
+    document.getElementById('err-sm-platform').classList.remove('visible');
+  }
+
+  // Political ID
+  const polSel = document.querySelector('#pol-scale .likert-btn.selected');
+  if (!polSel) {
+    document.getElementById('err-polid').classList.add('visible');
+    valid = false;
+  } else {
+    document.getElementById('err-polid').classList.remove('visible');
+  }
+
+  // Ethnicity
+  const ethnicity = document.getElementById('demo-ethnicity').value;
+  if (!ethnicity) {
+    document.getElementById('err-ethnicity').classList.add('visible');
+    valid = false;
+  } else {
+    document.getElementById('err-ethnicity').classList.remove('visible');
+  }
+
+  if (!valid) {
+    const err = document.getElementById('demo-error');
+    err.textContent = 'Please complete all required fields.';
+    err.classList.add('visible');
+    return;
+  }
+
+  state.demo = {
+    age,
+    gender: gender.value,
+    education: edu,
+    smFrequency: smFreq,
+    smPlatform,
+    politicalId: parseInt(polSel.dataset.val),
+    ethnicity,
+    comments: document.getElementById('demo-comments').value.trim() || ''
+  };
+
+  document.getElementById('demo-error').classList.remove('visible');
+  goTo('screen-debrief');
+}
+
+/* ════════════════════════════════════════════════════════
+   DATA EXPORT
+   ════════════════════════════════════════════════════════ */
+// ── REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL ──
+const SHEET_ENDPOINT = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+function flattenResponses() {
+  // Flatten headline responses into one object per participant (wide format)
+  const flat = {};
+  state.headlines.forEach((h, i) => {
+    const r = state.responses[h.id] || {};
+    flat[`hl_${i+1}_id`]    = h.id;
+    flat[`hl_${i+1}_type`]  = h.type;
+    flat[`hl_${i+1}_topic`] = h.topic;
+    flat[`hl_${i+1}_text`]  = h.text;
+    flat[`hl_${i+1}_read`]  = r.read  ?? '';
+    flat[`hl_${i+1}_share`] = r.share ?? '';
+  });
+  return flat;
+}
+
+function buildRow() {
+  const row = {
+    // Prolific
+    PROLIFIC_PID : state.prolific.PROLIFIC_PID || '',
+    STUDY_ID     : state.prolific.STUDY_ID     || '',
+    SESSION_ID   : state.prolific.SESSION_ID   || '',
+    // Condition
+    condition        : state.condition,
+    language_type    : state.languageType,
+    self_reflection  : state.identifiability,   // 'high' or 'low'
+    // Manipulation check
+    mc1 : state.mancheck.mc1 ?? '',
+    mc2 : state.mancheck.mc2 ?? '',
+    mc3 : state.mancheck.mc3 ?? '',   // reverse-keyed
+    mc4 : state.mancheck.mc4 ?? '',
+    // Attention check
+    attention_response : state.attention      || '',
+    attention_passed   : state.attentionPassed ?? '',
+    // Demographics
+    age          : state.demo.age          || '',
+    gender       : state.demo.gender       || '',
+    education    : state.demo.education    || '',
+    sm_frequency : state.demo.smFrequency  || '',
+    sm_platform  : state.demo.smPlatform   || '',
+    political_id : state.demo.politicalId  || '',
+    ethnicity    : state.demo.ethnicity    || '',
+    comments     : state.demo.comments     || '',
+    // Headline responses (wide format)
+    ...flattenResponses(),
+    // Meta
+    timestamp  : state.timestamp,
+    user_agent : state.userAgent
+  };
+  return row;
+}
+
+function submitToSheets(row) {
+  if (!SHEET_ENDPOINT || SHEET_ENDPOINT === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    console.warn('No Google Sheets endpoint configured. Data logged to console only.');
+    console.log('Row data:', JSON.stringify(row, null, 2));
+    return;
+  }
+  fetch(SHEET_ENDPOINT, {
+    method : 'POST',
+    mode   : 'no-cors',   // required for Apps Script
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify(row)
+  }).catch(err => console.error('Sheet submission error:', err));
+}
+
+function submitDebrief() {
+  finalizeData();
+  goTo('screen-complete');
+  triggerProlificRedirect();
+}
+
+function finalizeData() {
+  state.timestamp = new Date().toISOString();
